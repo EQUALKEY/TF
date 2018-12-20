@@ -10,31 +10,27 @@ public class EventController : MonoBehaviour
 
     // GameOver창 전체 (부모), GameOver 배경, Clear 배경
     // 랭크버튼 (GameOver시 시작화면-재시작-랭크), 무한모드버튼 (Clear시 시작화면-재시작-무한모드)
-    public GameObject GameFinish, GameOver, Clear, RankButton, InfinityModeButton;
+    public GameObject GameOverWindow, GameOverBack, ClearBack, RankButton, InfinityModeButton;
 
     // GameOver시 중앙에 RankBox;
     public GameObject GameOverRankBox;
 
     // 깨다
-    private Animator QuadaAnimator;
+    private Animator CharacterAnimator;
 
-    // 폭탄 Prefabs
+    // 폭탄 오브젝트들
     public GameObject SinBoom, SecBoom, TanBoom, CosBoom, CosecBoom, CotanBoom;
 
     // 폭탄 Prefab 부모
     public GameObject EnemyPar;
 
     // 삼각형 오브젝트
-    public GameObject Triangle;
+    public GameObject Tri;
 
     // Edge 효과들 - Activated, Effect, DeleteEffect, Length
-    public GameObject[] Co = new GameObject[3];
-    public GameObject[] Hyp = new GameObject[3];
-    public GameObject[] Height = new GameObject[3];
-    public GameObject[] Base = new GameObject[3];
-    public GameObject Hypo0, HeightActivated, BaseActivated;
-    public GameObject Hypo1, HeightEffect, BaseEffect;
-    public GameObject Hypo2, HeightDeleteEffect, BaseDeleteEffect;
+    public GameObject HypoActivated, HeightActivated, BaseActivated;
+    public GameObject HypoEffect, HeightEffect, BaseEffect;
+    public GameObject HypoDeleteEffect, HeightDeleteEffect, BaseDeleteEffect;
     public GameObject HypoLength, HeightLength, BaseLength;
 
     // Circle 4가지 + 충돌 Circle
@@ -142,13 +138,13 @@ public class EventController : MonoBehaviour
         KillMonsters = 0;
         combo = 0;
 
-        QuadaAnimator = GetComponent<Animator>();
-        QuadaAnimator.SetInteger("Quebon_state", 0);
+        CharacterAnimator = Character.GetComponent<Animator>();
+        CharacterAnimator.SetInteger("Quebon_state", 0);
 
         SkillReady = false;
         SkillGauge = 0;
 
-        StandardScale = Triangle.transform.localScale;
+        StandardScale = Tri.transform.localScale;
 
         onHypo = false;
         onHeight = false;
@@ -166,8 +162,8 @@ public class EventController : MonoBehaviour
     {
         // TriRange 밖에서 마우스 누르면 회전 시작
         // 시작 시 삼각형 위치(깨다 기준), 회전 기록
-        TriStartPosition = Triangle.transform.position - CoR;
-        TriStartRotation = Triangle.transform.rotation;
+        TriStartPosition = Tri.transform.position - CoR;
+        TriStartRotation = Tri.transform.rotation;
         // 마우스 시작위치는 깨다 기준 상대적 위치
         MouseStartPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - CoR;
     }
@@ -191,12 +187,12 @@ public class EventController : MonoBehaviour
                 switch (Tstate)
                 {
                     case 0:
-                        if (onHypo) Hypo1.SetActive(true);
+                        if (onHypo) HypoEffect.SetActive(true);
                         else if (onHeight && isCo) HeightEffect.SetActive(true);
                         else if (onBase && !isCo) BaseEffect.SetActive(true);
                         break;
                     case 1:
-                        if (onHypo) Hypo2.SetActive(true);
+                        if (onHypo) HypoDeleteEffect.SetActive(true);
                         else if (onHeight && !isCo)
                         {
                             BowEffect.SetActive(true);
@@ -402,22 +398,22 @@ public class EventController : MonoBehaviour
             switch (Tstate)
             {
                 case 0:
-                    Triangle.transform.localScale = StandardScale;
+                    Tri.transform.localScale = StandardScale;
                     break;
                 case 1:
-                    Hypo0.SetActive(true);
+                    HypoActivated.SetActive(true);
                     HypoLength.SetActive(true);
-                    Triangle.transform.localScale = StandardScale * 0.807f;
+                    Tri.transform.localScale = StandardScale * 0.807f;
                     break;
                 case 2:
                     HeightActivated.SetActive(true);
                     HeightLength.SetActive(true);
-                    Triangle.transform.localScale = StandardScale * 1.365f;
+                    Tri.transform.localScale = StandardScale * 1.365f;
                     break;
                 case 3:
                     BaseActivated.SetActive(true);
                     BaseLength.SetActive(true);
-                    Triangle.transform.localScale = StandardScale;
+                    Tri.transform.localScale = StandardScale;
                     break;
             }
 
@@ -459,13 +455,13 @@ public class EventController : MonoBehaviour
                                                                                                     // Vertor2.Angle은 항상 0<=Angle<180이므로 외적을 이용해서 반환
                 if (Vector3.Cross(MouseStartPosition, MousePresentPosition).z < 0) RotateAngle = 360f - RotateAngle;
                 // 회전 및 삼각형 중심 - 회전 중심 위치 조정
-                Triangle.transform.rotation = TriStartRotation * Quaternion.Euler(Vector3.forward * RotateAngle);
+                Tri.transform.rotation = TriStartRotation * Quaternion.Euler(Vector3.forward * RotateAngle);
                 // Hypo, Height, Base Length 같이 회전 (역방향)
-                HypoLength.transform.rotation = Quaternion.Euler(-(Triangle.transform.rotation * Vector3.forward));
-                HeightLength.transform.rotation = Quaternion.Euler(-(Triangle.transform.rotation * Vector3.forward));
-                BaseLength.transform.rotation = Quaternion.Euler(-(Triangle.transform.rotation * Vector3.forward));
+                HypoLength.transform.rotation = Quaternion.Euler(-(Tri.transform.rotation * Vector3.forward));
+                HeightLength.transform.rotation = Quaternion.Euler(-(Tri.transform.rotation * Vector3.forward));
+                BaseLength.transform.rotation = Quaternion.Euler(-(Tri.transform.rotation * Vector3.forward));
 
-                Triangle.transform.position = Quaternion.Euler(Vector3.forward * RotateAngle) * TriStartPosition + CoR;
+                Tri.transform.position = Quaternion.Euler(Vector3.forward * RotateAngle) * TriStartPosition + CoR;
             }
 
             if (Input.GetKeyDown(KeyCode.Mouse1)) { Reset(); } // 우클릭 시 초기화
@@ -474,7 +470,7 @@ public class EventController : MonoBehaviour
 
     private void RotateFinish()
     { // 회전 끝
-        Triangle.transform.localScale = StandardScale;
+        Tri.transform.localScale = StandardScale;
         isLaunching = 0;
         Tstate = 0;
         isCo = false;
@@ -496,11 +492,11 @@ public class EventController : MonoBehaviour
         CoAngleDeleteEffect.SetActive(false);
         IdleAngleEffect.SetActive(false);
 
-        Hypo1.SetActive(false);
+        HypoEffect.SetActive(false);
         HeightEffect.SetActive(false);
         BaseEffect.SetActive(false);
 
-        Hypo2.SetActive(false);
+        HypoDeleteEffect.SetActive(false);
         HeightDeleteEffect.SetActive(false);
         BaseDeleteEffect.SetActive(false);
 
@@ -533,7 +529,7 @@ public class EventController : MonoBehaviour
 
     private void ClearEdgeActivated()
     { // 변 활성화 지우기
-        Hypo0.SetActive(false);
+        HypoActivated.SetActive(false);
         HeightActivated.SetActive(false);
         BaseActivated.SetActive(false);
 
@@ -622,7 +618,7 @@ public class EventController : MonoBehaviour
         switch (NumOfAnimator)
         {
             case 0: // Character_Animator , Quebon_state ( 0 : idle , 1 : attack , 2 : damaged )
-                QuadaAnimator.SetInteger("Quebon_state", state);
+                CharacterAnimator.SetInteger("Quebon_state", state);
                 StopCoroutine("EndAnimation");
                 StartCoroutine("EndAnimation", NumOfAnimator);
                 break;
@@ -634,7 +630,7 @@ public class EventController : MonoBehaviour
         if (NumOfAnimator == 0)
         {
             yield return new WaitForSeconds(1f);
-            QuadaAnimator.SetInteger("Quebon_state", 0);
+            CharacterAnimator.SetInteger("Quebon_state", 0);
         }
 
     }
@@ -660,24 +656,25 @@ public class EventController : MonoBehaviour
                 LifeOn[0].SetActive(false);
                 LifeOff[0].SetActive(true);
                 Lifes--;
-                DoGameOver(false);
+                GameOver(false);
                 GetComponent<AudioManager>().GameOverSound();
                 break;
         }
     }
 
-    public void DoGameOver(bool isCleared) // GameOver 시 해야될 일을 해주는 함수
+    public void GameOver(bool isCleared) // GameOver 시 해야될 일을 해주는 함수
     {                                    // isCleared면 Clear, 아니면 GameOver
         StopCoroutine("Timer");
         foreach (Transform Enemy in EnemyPar.transform) Destroy(Enemy.gameObject);
-        Triangle.SetActive(false);
+        Tri.SetActive(false);
         CircleCollision.SetActive(false);
-        GameFinish.SetActive(true);
-        GameFinish.transform.Translate(new Vector3(0f, 0f, 0.01f));
+        Character.SetActive(false);
+        GameOverWindow.SetActive(true);
+        GameOverWindow.transform.Translate(new Vector3(0f, 0f, 0.01f));
         if (isCleared)
         {
-            GameOver.SetActive(false);
-            Clear.SetActive(true);
+            GameOverBack.SetActive(false);
+            ClearBack.SetActive(true);
             RankButton.SetActive(false);
             InfinityModeButton.SetActive(true);
         }
@@ -685,8 +682,8 @@ public class EventController : MonoBehaviour
         {
             RM.PutAndGetRankInfo(Score, current_Time);
             GameOverRankBox.SetActive(true);
-            GameOver.SetActive(true);
-            Clear.SetActive(false);
+            GameOverBack.SetActive(true);
+            ClearBack.SetActive(false);
             RankButton.SetActive(true);
             InfinityModeButton.SetActive(false);
         }

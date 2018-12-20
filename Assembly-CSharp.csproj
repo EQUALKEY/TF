@@ -53,9 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\Play\AudioManager.cs" />
-     <Compile Include="Assets\Scripts\Play\combo.cs" />
-     <Compile Include="Assets\Scripts\Play\ComboNum.cs" />
+     <Compile Include="Assets\Scripts\AudioManager.cs" />
      <Compile Include="Assets\Scripts\Play\EnemyBehaviour.cs" />
      <Compile Include="Assets\Scripts\Play\EventController.cs" />
      <Compile Include="Assets\Scripts\Play\MakeEnemy.cs" />
@@ -66,7 +64,6 @@
      <Compile Include="Assets\Scripts\Play\Range\IdleRange.cs" />
      <Compile Include="Assets\Scripts\Play\WeoponAndSkill\Arrow.cs" />
      <Compile Include="Assets\Scripts\Play\WeoponAndSkill\Shield.cs" />
-     <Compile Include="Assets\Scripts\Play\WeoponAndSkill\Skill.cs" />
      <Compile Include="Assets\Scripts\Play\WeoponAndSkill\Spear.cs" />
      <Compile Include="Assets\Scripts\Rank\RankBox.cs" />
      <Compile Include="Assets\Scripts\Rank\RankManager.cs" />

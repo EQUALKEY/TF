@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Spear : MonoBehaviour {
+public class Spear : MonoBehaviour
+{
 
     Vector3 direction;
     bool isStraight;

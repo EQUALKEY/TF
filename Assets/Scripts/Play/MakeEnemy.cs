@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MakeEnemy : MonoBehaviour {
+public class MakeEnemy : MonoBehaviour
+{
 
     // sin, sec, tan, cos, cosec, cotan
-    public GameObject[] Enemy = new GameObject[6];          
+    public GameObject[] Enemy = new GameObject[6];
     public GameObject[] EnemyTypeInfo = new GameObject[6];
 
     // 몬스터 부모 gameObject
@@ -19,7 +20,7 @@ public class MakeEnemy : MonoBehaviour {
     // StoryMode Text
     public GameObject TextBox;
     public Text TextBox_text;
-   
+
     // StoryMode Bubble
     public GameObject SpeechBubble;
     public Text SpeechBubble_text;
@@ -78,7 +79,7 @@ public class MakeEnemy : MonoBehaviour {
     // StoryMode, InfinityMode Level 기준 몬스터 수
     private static readonly int[] StoryModeMonsterCnt = { 2, 4, 6, 16, 18, 20, 22, 32, 52, 72, 99999999 };
     private static readonly int[] InfinityModeMonsterCnt = { 4, 20, 60, 100, 160, 250, 400, 600, 99999999 };
-    
+
     // StoryMode Level Control, 0 ~ 7은 속도-리젠간격 같고, 8, 9만 다름 => 3가지
     private static readonly float[] StoryMonsterVelocity = { 0.5f, 0.6f, 0.8f };
     private static readonly float[] StoryRezentime = { 4f, 4f, 3.5f };
@@ -88,20 +89,24 @@ public class MakeEnemy : MonoBehaviour {
     private static readonly float[] InfinityRezentime = { 4f, 3.5f, 3.0f, 2.5f, 2.0f, 1.8f, 1.5f, 1.3f, 1.0f };
 
     // 초기화
-    private void Awake() {
+    private void Awake()
+    {
         ec = EC.GetComponent<EventController>();
 
         InfinityLevelState = 0;
         CreatedMonsterCnt = 0;
 
         // StoryMode
-        if (PlayerPrefs.GetInt("Mode") == 0) {
+        if (PlayerPrefs.GetInt("Mode") == 0)
+        {
             IsStoryMode = true;
             StoryLevelState = 1;
             ec.isPlay = false;
             StoryProgress = 0;
             StoryManager();
-        } else { // InfinityMode
+        }
+        else
+        { // InfinityMode
             IsStoryMode = false;
             StoryLevelState = 0;
             ec.isPlay = true;
@@ -110,17 +115,22 @@ public class MakeEnemy : MonoBehaviour {
     }
 
     // 몬스터 생성 시작
-    void Make_Enemy() {
+    void Make_Enemy()
+    {
         StartCoroutine("CreateEnemyController");
     }
 
     // 몬스터 생성 관리
-    IEnumerator CreateEnemyController() {
+    IEnumerator CreateEnemyController()
+    {
         // 몬스터 속도, 리젠시간 설정
-        if (IsStoryMode) {
+        if (IsStoryMode)
+        {
             MonsterVelocity = StoryMonsterVelocity[StoryLevelState - 8 < 0 ? 0 : StoryLevelState - 8];
             Rezentime = StoryRezentime[StoryLevelState - 8 < 0 ? 0 : StoryLevelState - 8];
-        } else {
+        }
+        else
+        {
             MonsterVelocity = InfinityMonsterVelocity[InfinityLevelState];
             Rezentime = InfinityRezentime[InfinityLevelState];
         }
@@ -130,8 +140,10 @@ public class MakeEnemy : MonoBehaviour {
         int EnemyType = Random.Range(0, 6);
 
         // 스토리모드인 경우 생성되는 몬스터 종류 관리
-        if (IsStoryMode) {
-            switch (StoryLevelState) { // 1 ~ 9 단계
+        if (IsStoryMode)
+        {
+            switch (StoryLevelState)
+            { // 1 ~ 9 단계
                 case 1: // sin
                     EnemyType = 0;
                     break;
@@ -156,8 +168,8 @@ public class MakeEnemy : MonoBehaviour {
                 case 8: // cos, cosec, cotan
                     EnemyType = Random.Range(3, 6);
                     break;
-                // 9, 10의 경우 6가지 모두 나온다
-                // 0은 InfinityMode
+                    // 9, 10의 경우 6가지 모두 나온다
+                    // 0은 InfinityMode
             }
         }
 
@@ -168,9 +180,12 @@ public class MakeEnemy : MonoBehaviour {
         // Life = 0, StoryMode끝, StoryMode에서 멈춰야되는 부분의 경우 몬스터 생성 중지
         bool NeedStop = false;
         if (ec.Lifes == 0 || StoryLevelState == 11) NeedStop = true; // Life = 0, StoryMode끝
-        if (IsStoryMode) {
-            for (int i = 0; i < 9; i++) {
-                if (CreatedMonsterCnt == StoryModeMonsterCnt[i]) { // StoryMode에서 멈춰야되는 부분들
+        if (IsStoryMode)
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                if (CreatedMonsterCnt == StoryModeMonsterCnt[i])
+                { // StoryMode에서 멈춰야되는 부분들
                     NeedStop = true;
                     break;
                 }
@@ -180,15 +195,19 @@ public class MakeEnemy : MonoBehaviour {
     }
 
     // EnemyType이랑 velocity넣으면 몬스터 만듦
-    void CreateEnemy(int EnemyType, float velocity) {
+    void CreateEnemy(int EnemyType, float velocity)
+    {
         CreatedMonsterCnt++;
 
         // StoryMode인 경우
-        if (IsStoryMode) {
+        if (IsStoryMode)
+        {
             int i = 0;
             while (CreatedMonsterCnt >= StoryModeMonsterCnt[i]) i++;
             StoryLevelState = i + 1;
-        } else { // InfinityMode인 경우
+        }
+        else
+        { // InfinityMode인 경우
             int i = 0;
             while (CreatedMonsterCnt >= InfinityModeMonsterCnt[i]) i++;
             StoryLevelState = i + 1;
@@ -196,31 +215,34 @@ public class MakeEnemy : MonoBehaviour {
 
         // 360도 방향에서 랜덤 생성
         float PositionEdge = Random.Range(-1f * Mathf.PI, Mathf.PI);
-        GameObject newEnemy = Instantiate(Enemy[EnemyType], new Vector3(10f * Mathf.Cos(PositionEdge), 10f * Mathf.Sin(PositionEdge)), new Quaternion(0f,0f,0f,1f), EnemyParent.transform);
+        GameObject newEnemy = Instantiate(Enemy[EnemyType], new Vector3(10f * Mathf.Cos(PositionEdge), 10f * Mathf.Sin(PositionEdge)), new Quaternion(0f, 0f, 0f, 1f), EnemyParent.transform);
         Instantiate(EnemyTypeInfo[EnemyType], newEnemy.transform);   // 몬스터 Type정보도 같이 생성 (껐다켰다함)
         newEnemy.GetComponent<EnemyBehaviour>().Velocity = velocity; // 생성된 몬스터 속도 설정
     }
 
     // 스토리모드 진행
-    private void Update() {
+    private void Update()
+    {
         // 게임 멈춘 상태에서 마우스 클릭하면 스토리모드 진행
-        if (Input.GetKeyDown(KeyCode.Mouse0) && !ec.isPlay) {
+        if (Input.GetKeyDown(KeyCode.Mouse0) && !ec.isPlay)
+        {
             if (StoryProgress == 2)
             {
                 StoryProgress = -2;
                 Start_SpeechBubble(15);
-            }else if(StoryProgress == -2)
+            }
+            else if (StoryProgress == -2)
             {
                 StoryProgress = 3;
                 StoryManager();
             }
-            else if(StoryProgress == 3)
+            else if (StoryProgress == 3)
             {
                 StoryProgress = -3;
                 Start_SpeechBubble(16);
 
             }
-            else if(StoryProgress == -3)
+            else if (StoryProgress == -3)
             {
                 StoryProgress = 4;
                 StoryManager();
@@ -234,8 +256,10 @@ public class MakeEnemy : MonoBehaviour {
     }
 
     // 스토리모드 실행, StoryProgress 변수로 Story 어느정도 진행했는지 파악
-    public void StoryManager() {
-        switch (StoryProgress) {
+    public void StoryManager()
+    {
+        switch (StoryProgress)
+        {
             case 0:
                 Start_TextBox(0);
                 break;
@@ -360,31 +384,35 @@ public class MakeEnemy : MonoBehaviour {
                 break;
             case 26:
                 Stop_SpeechBubble();
-                ec.DoGameOver(true);
+                ec.GameOver(true);
                 break;
 
         }
     }
 
     // TextBox + num번째 Text 띄우기
-    void Start_TextBox(int num) {
+    void Start_TextBox(int num)
+    {
         TextBox.SetActive(true);
         TextBox_text.text = textArr[num];
     }
-    
+
     // TextBox 지우기
-    void Stop_TextBox() {
+    void Stop_TextBox()
+    {
         TextBox.SetActive(false);
     }
 
     // Bublle + num번째 Text 띄우기
-    void Start_SpeechBubble(int num) {
+    void Start_SpeechBubble(int num)
+    {
         SpeechBubble.SetActive(true);
         SpeechBubble_text.text = textArr[num];
     }
 
     // Bubble 지우기
-    void Stop_SpeechBubble() {
+    void Stop_SpeechBubble()
+    {
         SpeechBubble.SetActive(false);
     }
 }

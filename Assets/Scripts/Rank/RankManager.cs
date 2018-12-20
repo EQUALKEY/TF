@@ -32,7 +32,8 @@ public class RankManager : MonoBehaviour
         public string userid;
         public string nickname;
         public string token;
-        public UserData(string host, string userid, string nickname, string token) {
+        public UserData(string host, string userid, string nickname, string token)
+        {
             this.host = host;
             this.userid = userid;
             this.nickname = nickname;
@@ -53,8 +54,9 @@ public class RankManager : MonoBehaviour
     UserData user = new UserData();
 
     // 시작하면서 UserData 받아오고 저장
-    void Start() {
-        // LoadData();
+    void Start()
+    {
+        LoadData();
     }
 
     void LoadData()
@@ -224,7 +226,7 @@ public class RankManager : MonoBehaviour
                 MyRank = JsonUtility.FromJson<RankData>(w.downloadHandler.text);
 
                 Debug.Log("my rank=" + MyRank.rank);
-                
+
                 EC.transform.GetComponent<EventController>().GameOverRankBox.GetComponent<RankBox>().SetRankBox(MyRank.rank, MyRank.score, MyRank.time, MyRank.nickname, MyRank.level, false);
             }
         }
